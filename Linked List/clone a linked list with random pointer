@@ -1,0 +1,125 @@
+class Solution
+{
+    private:
+    void insertAtTail(Node* &head, Node* &tail, int d)
+    {       
+        Node* node = new Node(d);
+        if(head == NULL)
+        {
+            head = node;
+            tail = node;
+            return;
+        }
+        else
+        {
+            tail->next = node;
+            tail = node;
+        }   
+    }
+    public:
+    Node *copyList(Node *head)
+    {
+        // First Solution:- This solution uses map in time complexity is O(n) & space complexity is O(n)=> because of map
+        // step1 - create new list and copy all value of original in new using next pointer
+        /*
+        <-----------------------------------------Solution-1(Not so much optimize)----------------------------------------------->
+        
+        
+        Node * temp = head;
+        Node* cloneHead = NULL;
+        Node* cloneTail = NULL;
+        
+        while(temp != NULL)
+        {
+            insertAtTail(cloneHead, cloneTail, temp->data);
+            temp = temp->next;
+        }
+        
+        // step2 = create a map of old and new list
+        unordered_map<Node*, Node*> map;
+        Node* oldHead = head;
+        Node* newHead = cloneHead;
+        
+        while(oldHead != NULL)
+        {
+            map[oldHead] = newHead;
+            oldHead = oldHead->next;
+            newHead = newHead->next;
+        }
+         
+        // step3 = now make connection of random pointer of clone linked list using this created map
+        oldHead = head;
+        newHead = cloneHead;
+        
+        while(oldHead != NULL)
+        {
+            newHead->arb = map[oldHead->arb];
+            oldHead = oldHead->next;
+            newHead = newHead->next;
+        }
+        
+        return cloneHead;
+        
+        <--------------------------------------Solution-2(Optimize code)---------------------------------------------------->
+        */
+        
+        // step1 - create a clone list
+        Node * temp = head;
+        Node* cloneHead = NULL;
+        Node* cloneTail = NULL;
+        
+        while(temp != NULL)
+        {
+            insertAtTail(cloneHead, cloneTail, temp->data);
+            temp = temp->next;
+        }
+        
+        // step2 - cloneNodes add in between original list
+        Node* oldhead = head;
+        Node* newhead = cloneHead;
+        
+        while(oldhead != NULL && newhead != NULL)
+        {
+            Node* next = oldhead->next;
+            oldhead->next = newhead;
+            oldhead = next;
+            
+            // same process for clone list
+            next = newhead->next;
+            newhead->next = oldhead;
+            newhead = next;
+        }
+        
+        // step3 - random pointer copy
+        temp = head;
+        while(temp != NULL){
+            if(temp->next != NULL){
+                if(temp->arb != NULL){
+                    temp->next->arb = temp->arb->next;
+                }
+                else{
+                    temp->next->arb = temp->arb;
+                }
+            }
+            temp = temp->next->next;
+        }
+        
+        // step4 - revert changes done in step 2
+        oldhead = head;
+        newhead = cloneHead;
+        
+        while(oldhead != NULL && newhead != NULL)
+        {
+            oldhead->next = newhead->next;
+            oldhead = oldhead->next;
+            
+            // same for clone list
+            if(oldhead != NULL)
+                newhead->next = oldhead->next;
+            newhead = newhead->next;
+        }
+        
+        // return ans;
+        return cloneHead;
+    }
+};
